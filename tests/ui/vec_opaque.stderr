@@ -18,5 +18,5 @@ error[E0271]: type mismatch resolving `<handle::Job as ExternType>::Kind == Triv
     |
    ::: $WORKSPACE/src/extern_type.rs
     |
-    | pub fn verify_extern_kind<T: ExternType<Kind = Kind>, Kind: self::Kind>() {}
-    |                                         ----------- required by this bound in `verify_extern_kind`
+    | pub fn verify_extern_kind<T: ?Sized + ExternType<Kind = Kind>, Kind: self::Kind>() {}
+    |                                                  ----------- required by this bound in `verify_extern_kind`

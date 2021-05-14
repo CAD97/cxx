@@ -546,7 +546,8 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
             },
             Type::Ptr(ty) => {
                 if types.is_considered_improper_ctype(&ty.inner) {
-                    quote_spanned!(span=> #var.cast())
+                    let raw_mutability = if ty.mutable { quote_spanned!(span=> mut) } else { quote_spanned!(span=> const) };
+                    quote_spanned!(span=> #var as *#raw_mutability _)
                 } else {
                     quote!(#var)
                 }
@@ -683,7 +684,11 @@ fn expand_cxx_function_shim(efn: &ExternFn, types: &Types) -> TokenStream {
                 },
                 Type::Ptr(ty) => {
                     if types.is_considered_improper_ctype(&ty.inner) {
-                        quote_spanned!(span=> #call.cast())
+                        let raw_mutability = match ty.mutable {
+                            false => quote_spanned!(span=> const),
+                            true => quote_spanned!(span=> mut),
+                        };
+                        quote_spanned!(span=> #call as *#raw_mutability _)
                     } else {
                         call
                     }

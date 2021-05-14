@@ -180,10 +180,10 @@ mod private {
 }
 
 #[doc(hidden)]
-pub fn verify_extern_type<T: ExternType<Id = Id>, Id>() {}
+pub fn verify_extern_type<T: ?Sized + ExternType<Id = Id>, Id>() {}
 
 #[doc(hidden)]
-pub fn verify_extern_kind<T: ExternType<Kind = Kind>, Kind: self::Kind>() {}
+pub fn verify_extern_kind<T: ?Sized + ExternType<Kind = Kind>, Kind: self::Kind>() {}
 
 macro_rules! impl_extern_type {
     ($([$kind:ident] $($ty:path = $cxxpath:literal)*)*) => {
