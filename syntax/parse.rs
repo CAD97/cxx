@@ -22,6 +22,7 @@ use syn::{
 };
 
 pub mod kw {
+    syn::custom_keyword!(CRef);
     syn::custom_keyword!(Option);
     syn::custom_keyword!(Pin);
     syn::custom_keyword!(Result);
@@ -1213,6 +1214,23 @@ fn parse_type_path(ty: &TypePath) -> Result<Type> {
                                 Some((option_token, generic.lt_token, generic.gt_token));
                             return Ok(Type::Ref(inner));
                         }
+                    }
+                } else if ident == "CRef" && generic.args.len() == 1 {
+                    // #Todo: Allow explicit lifetime rather than inferred
+                    // #Todo: Verify that inner type is opaque and thus C++ aliasing rules
+                    if let GenericArgument::Type(arg) = &generic.args[0] {
+                        let inner = parse_type(arg)?;
+                        return Ok(Type::Ref(Box::new(Ref {
+                            pinned: false,
+                            option: false,
+                            ampersand: Token![&](ident.span()),
+                            lifetime: None,
+                            mutable: true,
+                            inner,
+                            pin_tokens: None,
+                            option_tokens: None,
+                            mutability: None,
+                        })));
                     }
                 } else {
                     let mut lifetimes = Punctuated::new();

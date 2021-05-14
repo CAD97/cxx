@@ -47,7 +47,7 @@ pub fn required_trivial_reasons<'a>(
             }
             Api::CxxFunction(efn) | Api::RustFunction(efn) => {
                 if let Some(receiver) = &efn.receiver {
-                    if receiver.mutable && !receiver.pinned {
+                    if receiver.mutability.is_some() && !receiver.pinned {
                         let reason = TrivialReason::UnpinnedMut(efn);
                         insist_extern_types_are_trivial(&receiver.ty, reason);
                     }
@@ -59,7 +59,7 @@ pub fn required_trivial_reasons<'a>(
                             insist_extern_types_are_trivial(ident, reason);
                         }
                         Type::Ref(ty) => {
-                            if ty.mutable && !ty.pinned {
+                            if ty.mutability.is_some() && !ty.pinned {
                                 if let Type::Ident(ident) = &ty.inner {
                                     let reason = TrivialReason::UnpinnedMut(efn);
                                     insist_extern_types_are_trivial(ident, reason);

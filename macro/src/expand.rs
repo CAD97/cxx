@@ -1765,7 +1765,7 @@ fn expand_extern_type(ty: &Type, types: &Types, proper: bool) -> TokenStream {
                 }
                 inner if proper && types.is_considered_improper_ctype(inner) => {
                     let star = Token![*](ampersand.span);
-                    match ty.mutable {
+                    match ty.mutability.is_some() {
                         false => quote!(#star const ::std::ffi::c_void),
                         true => quote!(#star #mutability ::std::ffi::c_void),
                     }
